@@ -13,11 +13,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Cloud Foundry CLI
+      - name: Download and Extract Cloud Foundry CLI
         run: |
           wget -q -O cf-cli.tgz "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github"
           tar -xzf cf-cli.tgz
+          ls -l
+          file cf
+
+      - name: Move cf binary to /usr/local/bin
+        run: |
           sudo mv cf /usr/local/bin/cf
+          ls -l /usr/local/bin/cf
+          which cf
           cf --version
 
       - name: Authenticate to Cloud Foundry
