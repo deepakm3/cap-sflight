@@ -18,18 +18,18 @@ jobs:
         run: |
           sudo rm -f /usr/local/bin/cf /usr/local/bin/cf8
 
-      - name: Download and Install Cloud Foundry CLI
-        run: |
-          wget -q -O cf-cli.tgz "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github"
-          tar -xzf cf-cli.tgz
-          chmod +x cf
-          sudo mv cf /usr/local/bin/cf
-          echo "Listing /usr/local/bin:"
-          ls -l /usr/local/bin | grep cf
-          echo "Which cf:"
-          which cf
-          echo "cf version:"
-          cf --version
+      # - name: Download and Install Cloud Foundry CLI
+      #   run: |
+      #     wget -q -O cf-cli.tgz "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github"
+      #     tar -xzf cf-cli.tgz
+      #     chmod +x cf
+      #     sudo mv cf /usr/local/bin/cf
+      #     echo "Listing /usr/local/bin:"
+      #     ls -l /usr/local/bin | grep cf
+      #     echo "Which cf:"
+      #     which cf
+      #     echo "cf version:"
+      #     cf --version
 
       - name: Authenticate to Cloud Foundry
         run: |
