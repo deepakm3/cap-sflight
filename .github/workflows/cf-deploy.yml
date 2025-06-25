@@ -1,40 +1,25 @@
-name: Deploy to Cloud Foundry
+- name: Download and Install Cloud Foundry CLI
+  run: |
+    # Clean up any existing cf binaries or symlinks
+    sudo rm -f /usr/local/bin/cf /usr/local/bin/cf8
 
-on:
-  push:
-    branches:
-      - main
+    # Download and extract
+    wget -q -O cf-cli.tgz "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github"
+    tar -xzf cf-cli.tgz
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+    # Find the extracted binary (cf8 or cf)
+    if [ -f cf8 ]; then
+      chmod +x cf8
+      sudo mv cf8 /usr/local/bin/cf8
+      sudo ln -s /usr/local/bin/cf8 /usr/local/bin/cf
+    elif [ -f cf ]; then
+      chmod +x cf
+      sudo mv cf /usr/local/bin/cf
+    fi
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Clean up any existing cf symlink or binary
-        run: |
-          sudo rm -f /usr/local/bin/cf /usr/local/bin/cf8
-
-      - name: Download and Install Cloud Foundry CLI
-        run: |
-          wget -q -O cf-cli.tgz "https://packages.cloudfoundry.org/stable?release=linux64-binary&source=github"
-          tar -xzf cf-cli.tgz
-          chmod +x cf
-          sudo mv cf /usr/local/bin/cf
-          echo "Listing /usr/local/bin:"
-          ls -l /usr/local/bin | grep cf
-          echo "Which cf:"
-          which cf
-          echo "cf version:"
-          cf --version
-
-      - name: Authenticate to Cloud Foundry
-        run: |
-          cf api ${{ secrets.CF_API_URL }}
-          cf auth ${{ secrets.CF_USERNAME }} ${{ secrets.CF_PASSWORD }}
-          cf target -o ${{ secrets.CF_ORG }} -s ${{ secrets.CF_SPACE }}
-
-      - name: Push to Cloud Foundry
-        run: cf push
+    echo "Listing /usr/local/bin:"
+    ls -l /usr/local/bin | grep cf
+    echo "Which cf:"
+    which cf
+    echo "cf version:"
+    cf --version
