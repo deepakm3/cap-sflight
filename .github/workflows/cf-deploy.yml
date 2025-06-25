@@ -1,9 +1,17 @@
 name: Deploy to Cloud Foundry
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      mta-source-dir:
+        required: true
+        type: string
+      mtar-dir:
+        required: true
+        type: string
+      mtar-file:
+        required: true
+        type: string
 
 jobs:
   deploy:
@@ -44,13 +52,14 @@ jobs:
           cf api ${{ secrets.CF_API_URL }}
           cf auth ${{ secrets.CF_USERNAME }} ${{ secrets.CF_PASSWORD }}
           cf target -o ${{ secrets.CF_ORG }} -s ${{ secrets.CF_SPACE }}
+
       - name: MTA build
-        if: steps.cache.outputs.cache-hit != 'true'
         run: npx mbt build -s ${{ inputs.mta-source-dir }} -t ${{ inputs.mtar-dir }} --mtar ${{ inputs.mtar-file }}
+
       - name: CF Deploy
         id: deploy
         uses: ./.github/actions/cf-deploy
         with:
-         createspace: true
-         mtafile: ${{ inputs.mtar-dir }}/${{ inputs.mtar-file }}
-         findurl_command: 'cf html5-list -di sflight-destination-service -u'
+          createspace: true
+          mtafile: ${{ inputs.mtar-dir }}/${{ inputs.mtar-file }}
+          findurl_command: 'cf html5-list -di sflight-destination-service -u'
