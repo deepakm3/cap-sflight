@@ -16,5 +16,5 @@ service TravelService @(path:'/processor') {
   };
 
 }
-
+// 
 type Percentage : Integer @assert.range: [1,100];
